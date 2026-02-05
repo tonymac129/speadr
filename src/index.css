@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+* {
+  font-family: "Inter", sans-serif;
+  @apply transition-colors duration-300;
+}
+
+body {
+  @apply overflow-hidden;
+}
