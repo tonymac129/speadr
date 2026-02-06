@@ -1,30 +1,34 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 type ReaderProps = {
+  index: number;
+  setIndex: React.Dispatch<React.SetStateAction<number>>;
   text: string[];
   speed: number;
   setEnded: React.Dispatch<React.SetStateAction<boolean>>;
+  running: boolean;
 };
 
-function Reader({ text, speed, setEnded }: ReaderProps) {
-  const [index, setIndex] = useState<number>(0);
-  const [center, setCenter] = useState<number>(0);
+function Reader({ index, setIndex, text, speed, setEnded, running }: ReaderProps) {
+  const center = Math.min(Math.floor(text[index].length / 2), 2);
 
   useEffect(() => {
-    if (index === text.length - 1) {
-      setEnded(true);
-      return;
+    if (running) {
+      if (index === text.length - 1) {
+        setEnded(true);
+        return;
+      }
+      const word = text[index];
+      const lastLetter = word[word.length - 1];
+      const timeout = lastLetter === "." || lastLetter === "," ? 170000 / speed : 60000 / speed;
+      const readerTimeout = setTimeout(() => {
+        setIndex((prev) => prev + 1);
+      }, timeout);
+      return () => {
+        clearTimeout(readerTimeout);
+      };
     }
-    const readerTimeout = setTimeout(() => {
-      setIndex((prev) => prev + 1);
-    }, 60000 / speed);
-    setCenter(Math.min(Math.floor(text[index].length / 2), 2));
-    console.log(index);
-
-    return () => {
-      clearTimeout(readerTimeout);
-    };
-  }, [index, text, speed, setEnded]);
+  }, [index, setIndex, text, speed, setEnded, running]);
 
   return (
     <div className="w-full h-50 border-3 border-zinc-900 rounded-lg flex items-center justify-center text-4xl font-bold text-white relative">
