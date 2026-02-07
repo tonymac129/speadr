@@ -1,19 +1,37 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion } from "framer-motion";
-import { FaCaretLeft, FaCaretRight, FaPause, FaPlay, FaStop } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaCaretLeft, FaCaretRight, FaFileImport, FaPause, FaPlay, FaStop } from "react-icons/fa";
+import { FaGear } from "react-icons/fa6";
 import { SiTarget } from "react-icons/si";
 import Option from "./components/Option";
 import Button from "./components/Button";
 import Reader from "./components/Reader";
+import Btn from "./components/Btn";
+import Modal from "./components/Modal";
+
+const defaultSettings: SettingsType = {
+  size: "m",
+  theme: "midnight",
+  focus: true,
+  speed: 350,
+};
+
+export type SettingsType = {
+  size: string;
+  theme: string;
+  focus: boolean;
+  speed: number;
+};
 
 function App() {
-  const [speed, setSpeed] = useState<number>(JSON.parse(localStorage.getItem("speadr-speed")!) || 400);
+  const [settings, setSettings] = useState<SettingsType>(JSON.parse(localStorage.getItem("speadr-settings")!) || defaultSettings);
   const [text, setText] = useState<string>("");
   const [reading, setReading] = useState<boolean>(false);
   const [ended, setEnded] = useState<boolean>(false);
   const [running, setRunning] = useState<boolean>(false);
   const [zen, setZen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const processedText = useMemo<string[]>(
     () =>
       text
@@ -48,10 +66,6 @@ function App() {
   }, [reading, processedText]);
 
   useEffect(() => {
-    localStorage.setItem("speadr-speed", JSON.stringify(speed));
-  }, [speed]);
-
-  useEffect(() => {
     indexRef.current = index;
   }, [index]);
 
@@ -60,6 +74,10 @@ function App() {
       setZen(false);
     }
   }, [ended]);
+
+  useEffect(() => {
+    localStorage.setItem("speadr-settings", JSON.stringify(settings));
+  }, [settings]);
 
   function handleBtn() {
     if (!reading && text.length > 0) {
@@ -75,12 +93,16 @@ function App() {
     }
   }
 
+  function handleImport() {
+    console.log("import");
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 200 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, type: "spring" }}
-      className="flex flex-col w-120 h-screen mx-auto items-center py-20 gap-y-10"
+      className="flex flex-col w-150 h-screen mx-auto items-center py-20 gap-y-10"
     >
       <div
         className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex flex-col items-center gap-y-5`}
@@ -89,24 +111,28 @@ function App() {
         <p className="text-zinc-400">Your All-in-One Reading Tool</p>
       </div>
       <div className="w-full flex flex-col gap-y-5">
-        <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-5`}>
+        <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-3`}>
+          <Btn onclick={handleImport}>
+            <FaFileImport size={15} /> Import text
+          </Btn>
           <Option selected={zen} setSelected={setZen}>
             <SiTarget size={15} />
             Zen mode
           </Option>
-          <div className=" text-zinc-400">
-            <input
-              type="text"
-              placeholder="Speed"
-              className="rounded-lg w-20 bg-zinc-900 h-full text-zinc-200 px-2 py-1 outline-none resize-none text-lg"
-              value={speed}
-              onChange={(e) => setSpeed(Number(e.target.value))}
-            />{" "}
-            WPM
-          </div>
+          <Btn onclick={() => setModalOpen(true)}>
+            <FaGear size={15} />
+            Settings
+          </Btn>
         </div>
         {reading ? (
-          <Reader index={index} setIndex={setIndex} text={processedText} speed={speed} setEnded={setEnded} running={running} />
+          <Reader
+            index={index}
+            setIndex={setIndex}
+            text={processedText}
+            setEnded={setEnded}
+            running={running}
+            settings={settings}
+          />
         ) : (
           <textarea
             className="rounded-lg bg-zinc-900 w-full h-50 text-zinc-200 px-5 py-3 outline-none resize-none text-lg"
@@ -160,6 +186,9 @@ function App() {
           )}
         </div>
       </div>
+      <AnimatePresence>
+        {modalOpen && <Modal settings={settings} setSettings={setSettings} close={() => setModalOpen(false)} />}
+      </AnimatePresence>
     </motion.div>
   );
 }
