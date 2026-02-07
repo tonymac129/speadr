@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCaretLeft, FaCaretRight, FaFileImport, FaPause, FaPlay, FaStop } from "react-icons/fa";
-import { FaGear } from "react-icons/fa6";
+import { FaCaretLeft, FaCaretRight, FaFileImport, FaGithub, FaInfoCircle, FaPause, FaPlay, FaStop } from "react-icons/fa";
+import { FaGear, FaRotateRight } from "react-icons/fa6";
 import { SiTarget } from "react-icons/si";
 import Option from "./components/Option";
 import Button from "./components/Button";
@@ -44,17 +44,32 @@ function App() {
   const buttonRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<number>(index);
 
+  function handleRestart() {
+    setIndex(0);
+    setReading(true);
+    setRunning(true);
+    setEnded(false);
+  }
+
   useEffect(() => {
     const pressListener = (e: KeyboardEvent) => {
-      if ((e.key === " " && reading) || (e.key === "\n" && !reading && e.ctrlKey)) {
+      if (e.key === "\n" && !reading && e.ctrlKey) {
         (buttonRef.current?.children[0] as HTMLButtonElement).click();
+      } else if (e.key === "r" && reading) {
+        handleRestart();
       }
     };
     const downListener = (e: KeyboardEvent) => {
+      if (e.key === " " && reading) {
+        e.preventDefault();
+        (buttonRef.current?.children[0] as HTMLButtonElement).click();
+      }
       if (e.key === "ArrowLeft") {
         setIndex(Math.max(0, indexRef.current - 10));
       } else if (e.key === "ArrowRight") {
         setIndex(Math.min(processedText.length - 1, indexRef.current + 10));
+      } else if (e.key === "Escape") {
+        setZen(false);
       }
     };
     document.addEventListener("keydown", downListener);
@@ -97,31 +112,42 @@ function App() {
     console.log("import");
   }
 
+  function handleAbout() {
+    setText("This is Speadr.");
+    handleRestart();
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 200 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, type: "spring" }}
-      className="flex flex-col w-150 h-screen mx-auto items-center py-20 gap-y-10"
+      className="flex flex-col w-150 h-screen mx-auto items-center py-20 gap-y-5"
     >
       <div
-        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex flex-col items-center gap-y-5`}
+        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex flex-col items-center gap-y-5 mb-5`}
       >
         <h2 className="text-white text-5xl font-bold">Speadr</h2>
         <p className="text-zinc-400">Your All-in-One Reading Tool</p>
       </div>
       <div className="w-full flex flex-col gap-y-5">
         <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-3`}>
-          <Btn onclick={handleImport}>
+          <Btn onclick={handleImport} title="Import text file">
             <FaFileImport size={15} /> Import text
           </Btn>
-          <Option selected={zen} setSelected={setZen}>
+          <Option selected={zen} setSelected={setZen} title="Toggle zen mode">
             <SiTarget size={15} />
             Zen mode
           </Option>
-          <Btn onclick={() => setModalOpen(true)}>
+          <Btn onclick={() => setModalOpen(true)} title="Open settings">
             <FaGear size={15} />
             Settings
+          </Btn>
+          <Btn onclick={() => window.open("https://github.com/tonymac129/speadr", "_blank")} title="View on GitHub">
+            <FaGithub size={15} />
+          </Btn>
+          <Btn onclick={handleAbout} title="About Speadr">
+            <FaInfoCircle size={15} />
           </Btn>
         </div>
         {reading ? (
@@ -145,7 +171,13 @@ function App() {
       <div
         className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex w-full justify-center gap-x-5`}
       >
-        <div className="flex-1 text-zinc-400 text-sm items-center flex">{reading && "Restart coming soon"}</div>
+        <div className="flex-1 text-zinc-400 text-sm items-center flex">
+          {reading && (
+            <Button onclick={handleRestart} title="Restart (R)">
+              <FaRotateRight size={20} />
+            </Button>
+          )}
+        </div>
         <div ref={buttonRef} title={!reading ? "Ctrl + Enter" : "Space"} className="flex-1">
           <Button onclick={handleBtn} primary>
             {reading && !ended && running && (
@@ -186,6 +218,7 @@ function App() {
           )}
         </div>
       </div>
+      {zen && reading && <div className="absolute bottom-2 text-zinc-600 text-xs">Esc to exit</div>}
       <AnimatePresence>
         {modalOpen && <Modal settings={settings} setSettings={setSettings} close={() => setModalOpen(false)} />}
       </AnimatePresence>
