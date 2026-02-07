@@ -3,18 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCaretLeft, FaCaretRight, FaFileImport, FaGithub, FaInfoCircle, FaPause, FaPlay, FaStop } from "react-icons/fa";
 import { FaGear, FaRotateRight } from "react-icons/fa6";
 import { SiTarget } from "react-icons/si";
+import { defaultSettings } from "./constants";
 import Option from "./components/Option";
 import Button from "./components/Button";
 import Reader from "./components/Reader";
 import Btn from "./components/Btn";
 import Modal from "./components/Modal";
-
-const defaultSettings: SettingsType = {
-  size: "m",
-  theme: "midnight",
-  focus: true,
-  speed: 350,
-};
 
 export type SettingsType = {
   size: string;
@@ -113,7 +107,9 @@ function App() {
   }
 
   function handleAbout() {
-    setText("This is Speadr.");
+    setText(
+      "Speadr is an all-in-one speed reader to help you read boring text faster and more efficiently with tons of customizations. This is a modern, super-fast, optimized single page application built with React, TypeScript, and Tailwind. How does this app help you read faster, you may ask? Well, there's something called RSVP (Rapid Serial Visual Presentation) that isolates individual words and anchors them at the center of a fixed viewport box. This eliminates the need for your eyes to spend extra time moving horizontally and scanning each sentence word by word. The app creates a highlighted focal point that makes your brain focus on a specific point to process the entire word instantly. The app also slows down on commas and periods to simulate natural speech. There are also tons of other features, keyboard shortcuts, and customizations to make everything easier to use! And if you made it this far, you probably already realized how much faster you're reading compared to usual. By using this app regularly and training your brain to process words even more efficiently, you can read walls of text in no time!",
+    );
     handleRestart();
   }
 
@@ -173,9 +169,14 @@ function App() {
       >
         <div className="flex-1 text-zinc-400 text-sm items-center flex">
           {reading && (
-            <Button onclick={handleRestart} title="Restart (R)">
-              <FaRotateRight size={20} />
-            </Button>
+            <>
+              <Button onclick={handleRestart} title="Restart (R)">
+                <FaRotateRight size={20} />
+              </Button>
+              <div className="ml-5 text-base">
+                {index + 1}/{processedText.length}
+              </div>
+            </>
           )}
         </div>
         <div ref={buttonRef} title={!reading ? "Ctrl + Enter" : "Space"} className="flex-1">

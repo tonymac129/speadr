@@ -5,6 +5,8 @@ import { BiCheck, BiPalette } from "react-icons/bi";
 import { BsSpeedometer } from "react-icons/bs";
 import { MdFontDownload } from "react-icons/md";
 import { TbFocus } from "react-icons/tb";
+import { FaTrash } from "react-icons/fa";
+import { defaultSettings } from "../constants";
 
 type ModalProps = {
   close: () => void;
@@ -26,6 +28,13 @@ function Modal({ close, settings, setSettings }: ModalProps) {
       document.removeEventListener("click", clickListener);
     };
   }, [close]);
+
+  function handleClear() {
+    if (confirm("Are you sure you want to reset your saved settings on Speadr? This action cannot be undone.")) {
+      setSettings(defaultSettings);
+      close();
+    }
+  }
 
   return (
     <motion.div
@@ -96,6 +105,15 @@ function Modal({ close, settings, setSettings }: ModalProps) {
               onChange={(e) => setSettings({ ...settings, focus: e.target.checked })}
             />
           </label>
+        </div>
+        <div className="text-red-500 cursor-pointer hover:underline flex items-center gap-x-3 my-5 w-fit" onClick={handleClear}>
+          <FaTrash size={20} /> Reset settings
+        </div>
+        <div className="text-center text-zinc-400 text-xs">
+          &copy; {new Date().getFullYear()}{" "}
+          <a href="https://tonymac.net" target="_blank" className="underline">
+            TonyMac129
+          </a>
         </div>
       </motion.div>
     </motion.div>
