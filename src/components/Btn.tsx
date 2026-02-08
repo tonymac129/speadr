@@ -12,7 +12,7 @@ function Btn({ children, onclick, title }: BtnProps) {
       whileHover={{ scale: 1.07, y: -1 }}
       whileTap={{ scale: 1.02 }}
       transition={{ duration: 0.4, type: "spring" }}
-      className="bg-zinc-900 text-zinc-200 rounded-lg font-bold px-3 py-2 cursor-pointer flex items-center gap-x-3"
+      className="bg-secondary text-secondary-text rounded-lg font-bold px-3 py-2 cursor-pointer flex items-center gap-x-3"
       onClick={onclick}
       title={title || ""}
     >

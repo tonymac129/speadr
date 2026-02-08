@@ -1,10 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: hsl(var(--primary-bg));
+  --color-secondary: hsl(var(--secondary-bg));
+  --color-primary-text: hsl(var(--primary-text));
+  --color-secondary-text: hsl(var(--secondary-text));
+  --color-accent: hsl(var(--accent));
+  --color-box-color: hsl(var(--box));
+}
+
+:root {
+  --primary-bg: 240 10% 4%;
+  --secondary-bg: 240 6% 10%;
+  --primary-text: 240 6% 60%;
+  --secondary-text: 0 0% 100%;
+  --accent: 357 96% 58%;
+  --box: 240 6% 10%;
+}
+
 * {
   font-family: "Inter", sans-serif;
   @apply transition-colors duration-300;
 }
 
 body {
-  @apply overflow-hidden;
+  @apply overflow-hidden bg-primary;
 }

@@ -42,34 +42,34 @@ function Modal({ close, settings, setSettings }: ModalProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       ref={modalRef}
-      className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-md"
+      className="fixed top-0 left-0 w-screen h-screen z-50 flex items-center justify-center bg-secondary/80 backdrop-blur-md"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0 }}
-        className="flex flex-col gap-y-5 p-10 w-90 rounded bg-zinc-950"
+        className="flex flex-col gap-y-5 p-10 w-90 rounded bg-primary"
       >
-        <h2 className="text-white text-2xl text-center font-bold mb-5">Settings</h2>
+        <h2 className="text-secondary-text text-2xl text-center font-bold mb-5">Settings</h2>
 
         <div className="flex gap-x-7">
-          <div className="text-zinc-400 flex items-center gap-x-3">
+          <div className="text-primary-text flex items-center gap-x-3">
             <BsSpeedometer size={25} /> Speed (WPM)
           </div>
           <input
             type="number"
             placeholder="Speed"
-            className="rounded w-15 bg-zinc-900 h-full text-zinc-200 px-2 text-center py-1.5 outline-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="rounded w-15 bg-secondary h-full text-secondary-text px-2 text-center py-1.5 outline-none [&::-webkit-inner-spin-button]:appearance-none"
             value={settings.speed}
             onChange={(e) => setSettings({ ...settings, speed: Number(e.target.value) })}
           />
         </div>
         <div className="flex gap-x-7">
-          <div className="text-zinc-400 flex items-center gap-x-3">
+          <div className="text-primary-text flex items-center gap-x-3">
             <MdFontDownload size={25} /> Font size
           </div>
           <select
-            className="w-20 bg-zinc-900 rounded py-1.5 cursor-pointer text-center appearance-none text-zinc-200 outline-none"
+            className="w-20 bg-secondary rounded py-1.5 cursor-pointer text-center appearance-none text-secondary-text outline-none"
             value={settings.size}
             onChange={(e) => setSettings({ ...settings, size: e.target.value })}
           >
@@ -79,25 +79,27 @@ function Modal({ close, settings, setSettings }: ModalProps) {
           </select>
         </div>
         <div className="flex gap-x-7">
-          <div className="text-zinc-400 flex items-center gap-x-3">
+          <div className="text-primary-text flex items-center gap-x-3">
             <BiPalette size={25} /> Theme
           </div>
           <select
-            className="w-25 bg-zinc-900 rounded py-1.5 cursor-pointer text-center appearance-none text-zinc-200 outline-none"
+            className="w-25 bg-secondary rounded py-1.5 cursor-pointer text-center appearance-none text-secondary-text outline-none"
             value={settings.theme}
             onChange={(e) => setSettings({ ...settings, theme: e.target.value })}
           >
             <option value="midnight">Midnight</option>
+            <option value="ocean">Ocean</option>
+            <option value="rust">Rust</option>
+            <option value="forest">Forest</option>
             <option value="daylight">Daylight</option>
-            <option value="dusk">Dusk</option>
           </select>
         </div>
         <div className="flex gap-x-7 items-center">
-          <div className="text-zinc-400 flex items-center gap-x-3">
+          <div className="text-primary-text flex items-center gap-x-3">
             <TbFocus size={25} /> Focal point
           </div>
-          <label className="w-5 h-5 rounded border-3 border-zinc-900 bg-transparent group cursor-pointer flex items-center justify-center relative">
-            <BiCheck size={35} className="hidden group group-has-checked:block text-red-500 absolute -bottom-2" />
+          <label className="w-5 h-5 rounded border-3 border-secondary bg-transparent group cursor-pointer flex items-center justify-center relative">
+            <BiCheck size={35} className="hidden group group-has-checked:block text-accent absolute -bottom-2" />
             <input
               type="checkbox"
               className="hidden"
@@ -106,10 +108,10 @@ function Modal({ close, settings, setSettings }: ModalProps) {
             />
           </label>
         </div>
-        <div className="text-red-500 cursor-pointer hover:underline flex items-center gap-x-3 my-5 w-fit" onClick={handleClear}>
+        <div className="text-accent cursor-pointer hover:underline flex items-center gap-x-3 my-5 w-fit" onClick={handleClear}>
           <FaTrash size={20} /> Reset settings
         </div>
-        <div className="text-center text-zinc-400 text-xs">
+        <div className="text-center text-primary-text text-xs">
           &copy; {new Date().getFullYear()}{" "}
           <a href="https://tonymac.net" target="_blank" className="underline">
             TonyMac129

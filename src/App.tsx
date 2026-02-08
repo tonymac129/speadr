@@ -11,6 +11,14 @@ import Reader from "./components/Reader";
 import Btn from "./components/Btn";
 import Modal from "./components/Modal";
 
+const themes: Record<string, number[]> = {
+  midnight: [240, 10, 4, 357],
+  daylight: [240, 6, 90, 357],
+  ocean: [200, 80, 6, 200],
+  rust: [10, 100, 10, 10],
+  forest: [120, 90, 6, 120],
+};
+
 export type SettingsType = {
   size: string;
   theme: string;
@@ -97,6 +105,21 @@ function App() {
     localStorage.setItem("speadr-settings", JSON.stringify(settings));
   }, [settings]);
 
+  useEffect(() => {
+    const theme = settings.theme;
+    const primary = `${themes[theme][0]} ${themes[theme][1]}% ${themes[theme][2]}%`;
+    const secondary = `${themes[theme][0]} ${themes[theme][1] - 4}% ${themes[theme][2] + 6}%`;
+    const primaryText = `${themes[theme][0]} ${themes[theme][1] - 4}% ${themes[theme][2] + (theme === "daylight" ? -56 : 56)}%`;
+    const secondaryText = `0 0% ${theme === "daylight" ? 0 : 100}%`;
+    const accent = `${themes[theme][3]} 96% 58%`;
+    document.documentElement.style.setProperty("--primary-bg", primary);
+    document.documentElement.style.setProperty("--secondary-bg", secondary);
+    document.documentElement.style.setProperty("--primary-text", primaryText);
+    document.documentElement.style.setProperty("--secondary-text", secondaryText);
+    document.documentElement.style.setProperty("--accent", accent);
+    document.documentElement.style.setProperty("--box", theme === "daylight" || theme === "midnight" ? "240 6% 10%" : secondary);
+  }, [settings.theme]);
+
   function handleBtn() {
     if (!reading && text.length > 0) {
       setReading(true);
@@ -150,8 +173,8 @@ function App() {
       <div
         className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex flex-col items-center gap-y-5 mb-5`}
       >
-        <h2 className="text-white text-5xl font-bold">Speadr</h2>
-        <p className="text-zinc-400">Your All-in-One Reading Tool</p>
+        <h2 className="text-secondary-text text-5xl font-bold">Speadr</h2>
+        <p className="text-primary-text">Your All-in-One Reading Tool</p>
       </div>
       <div className="w-full flex flex-col gap-y-5">
         <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-3`}>
@@ -185,7 +208,7 @@ function App() {
           />
         ) : (
           <textarea
-            className="rounded-lg bg-zinc-900 w-full h-50 text-zinc-200 px-5 py-3 outline-none resize-none text-lg"
+            className="rounded-lg bg-secondary w-full h-50 text-secondary-text px-5 py-3 outline-none resize-none text-lg"
             placeholder="Enter your text here..."
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -195,7 +218,7 @@ function App() {
       <div
         className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex w-full justify-center gap-x-5`}
       >
-        <div className="flex-1 text-zinc-400 text-sm items-center flex">
+        <div className="flex-1 text-primary-text text-sm items-center flex">
           {reading && (
             <>
               <Button onclick={handleRestart} title="Restart (R)">
