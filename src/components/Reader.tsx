@@ -33,12 +33,12 @@ function Reader({ index, setIndex, text, setEnded, running, settings }: ReaderPr
 
   return (
     <div
-      className={`w-full h-50 border-3 border-box-color rounded-lg flex items-center justify-center ${settings.size === "s" ? "text-2xl" : settings.size === "m" ? "text-4xl" : "text-5xl"} font-bold text-secondary-text relative`}
+      className={`w-full h-30 md:h-50 border-3 border-box-color rounded-lg flex items-center justify-center ${settings.size === "s" ? "text-2xl" : settings.size === "m" ? "text-4xl" : "text-5xl"} font-bold text-secondary-text relative`}
     >
       {settings.focus && (
         <>
-          <div className="absolute left-[50%] -translate-x-[50%] w-0.5 bg-box-color h-17 top-0" />
-          <div className="absolute left-[50%] -translate-x-[50%] w-0.5 bg-box-color h-17 bottom-0" />
+          <div className="absolute left-[50%] -translate-x-[50%] w-0.5 bg-box-color h-8 md:h-17 top-0" />
+          <div className="absolute left-[50%] -translate-x-[50%] w-0.5 bg-box-color h-8 md:h-17 bottom-0" />
         </>
       )}
       <div className={`${settings.focus ? "flex-1" : ""} text-right`}>{text[index].slice(0, center)}</div>

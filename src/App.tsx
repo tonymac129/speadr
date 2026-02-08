@@ -168,16 +168,18 @@ function App() {
       initial={{ opacity: 0, y: 200 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, type: "spring" }}
-      className="flex flex-col w-150 h-screen mx-auto items-center py-20 gap-y-5"
+      className="flex flex-col w-[90%] md:w-150 h-screen mx-auto items-center py-2 sm:py-5 lg:py-15 gap-y-2 md:gap-y-5"
     >
       <div
-        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex flex-col items-center gap-y-5 mb-5`}
+        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex-col items-center gap-y-2 hidden sm:flex md:gap-y-5 mb-5`}
       >
-        <h2 className="text-secondary-text text-5xl font-bold">Speadr</h2>
-        <p className="text-primary-text">Your All-in-One Reading Tool</p>
+        <h2 className="text-secondary-text text-4xl md:text-5xl font-bold">Speadr</h2>
+        <p className="text-primary-text hidden lg:block">Your All-in-One Speed Reading Tool</p>
       </div>
-      <div className="w-full flex flex-col gap-y-5">
-        <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-3`}>
+      <div className="w-full flex flex-col gap-y-2 sm:gap-y-5">
+        <div
+          className={`${zen && reading ? "hidden sm:flex opacity-0 pointer-events-none" : "opacity-100 flex"} transition-all! gap-1 md:gap-3 flex-wrap`}
+        >
           <Btn onclick={() => fileInputRef.current?.click()} title="Import text file">
             <FaFileImport size={15} /> Import text
             <input type="file" ref={fileInputRef} accept=".txt, .doc, .docx" className="hidden" onChange={handleImport} />
@@ -208,15 +210,25 @@ function App() {
           />
         ) : (
           <textarea
-            className="rounded-lg bg-secondary w-full h-50 text-secondary-text px-5 py-3 outline-none resize-none text-lg"
+            className="rounded-lg bg-secondary w-full h-30 md:h-50 text-secondary-text px-5 py-3 outline-none resize-none text-lg"
             placeholder="Enter your text here..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           ></textarea>
         )}
       </div>
+      {reading && (
+        <div
+          className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! w-full bg-secondary h-1 rounded-full overflow-hidden`}
+        >
+          <div
+            className="bg-secondary-text h-full transition-all!"
+            style={{ width: ((index + 1) / processedText.length) * 100 + "%" }}
+          ></div>
+        </div>
+      )}
       <div
-        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex w-full justify-center gap-x-5`}
+        className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex w-full justify-center gap-x-5 flex-wrap`}
       >
         <div className="flex-1 text-primary-text text-sm items-center flex">
           {reading && (
@@ -224,8 +236,16 @@ function App() {
               <Button onclick={handleRestart} title="Restart (R)">
                 <FaRotateRight size={20} />
               </Button>
-              <div className="ml-5 text-base">
-                {index + 1}/{processedText.length}
+              <div className="hidden sm:flex text-sm ml-2 flex-col justify-center">
+                <div>
+                  Words: {index + 1}/{processedText.length}
+                </div>
+                <div>
+                  Time left: {Math.floor((processedText.length - (index + 1)) / settings.speed)}:
+                  {Math.floor((((processedText.length - (index + 1)) / settings.speed) * 60) % 60)
+                    .toString()
+                    .padStart(2, "0")}
+                </div>
               </div>
             </>
           )}
@@ -234,22 +254,22 @@ function App() {
           <Button onclick={handleBtn} primary>
             {reading && !ended && running && (
               <>
-                <FaPause size={15} /> Pause
+                <FaPause size={15} /> <span className="hidden sm:block">Pause</span>
               </>
             )}
             {!reading && !ended && (
               <>
-                <FaPlay size={15} /> Start
+                <FaPlay size={15} /> <span className="hidden sm:block">Start</span>
               </>
             )}
             {reading && !running && (
               <>
-                <FaPlay size={15} /> Resume
+                <FaPlay size={15} /> <span className="hidden sm:block">Resume</span>
               </>
             )}
             {ended && (
               <>
-                <FaStop size={15} /> Exit
+                <FaStop size={15} /> <span className="hidden sm:block">Exit</span>
               </>
             )}
           </Button>
