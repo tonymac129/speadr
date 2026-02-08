@@ -43,7 +43,7 @@ function Reader({ index, setIndex, text, setEnded, running, settings }: ReaderPr
       )}
       <div className={`${settings.focus ? "flex-1" : ""} text-right`}>{text[index].slice(0, center)}</div>
       <div className={settings.focus ? "text-red-500" : "text-white"}>{text[index][center]}</div>
-      <div className={`${settings.focus ? "flex-1" : ""} text-left`}>{text[index].slice(center + 1)}</div>
+      <div className={`${settings.focus ? "flex-1 w-20" : ""} text-left`}>{text[index].slice(center + 1)}</div>
     </div>
   );
 }

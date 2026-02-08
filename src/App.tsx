@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, type ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCaretLeft, FaCaretRight, FaFileImport, FaGithub, FaInfoCircle, FaPause, FaPlay, FaStop } from "react-icons/fa";
 import { FaGear, FaRotateRight } from "react-icons/fa6";
 import { SiTarget } from "react-icons/si";
 import { defaultSettings } from "./constants";
+import mammoth from "mammoth";
 import Option from "./components/Option";
 import Button from "./components/Button";
 import Reader from "./components/Reader";
@@ -37,6 +38,7 @@ function App() {
   );
   const buttonRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef<number>(index);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleRestart() {
     setIndex(0);
@@ -63,7 +65,14 @@ function App() {
       } else if (e.key === "ArrowRight") {
         setIndex(Math.min(processedText.length - 1, indexRef.current + 10));
       } else if (e.key === "Escape") {
-        setZen(false);
+        if (reading) {
+          if (zen) {
+            setZen(false);
+          } else {
+            setReading(false);
+            setEnded(false);
+          }
+        }
       }
     };
     document.addEventListener("keydown", downListener);
@@ -72,7 +81,7 @@ function App() {
       document.removeEventListener("keydown", downListener);
       document.removeEventListener("keypress", pressListener);
     };
-  }, [reading, processedText]);
+  }, [reading, processedText, zen]);
 
   useEffect(() => {
     indexRef.current = index;
@@ -102,8 +111,26 @@ function App() {
     }
   }
 
-  function handleImport() {
-    console.log("import");
+  async function handleImport(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type === "text/plain") {
+      const reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        try {
+          const result = e.target?.result;
+          if (typeof result !== "string") return;
+          setText(result);
+        } catch (err) {
+          alert("Error: " + err);
+        }
+      };
+    } else {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      setText(result.value);
+    }
   }
 
   function handleAbout() {
@@ -128,8 +155,9 @@ function App() {
       </div>
       <div className="w-full flex flex-col gap-y-5">
         <div className={`${zen && reading ? "opacity-0 pointer-events-none" : "opacity-100"} transition-all! flex gap-x-3`}>
-          <Btn onclick={handleImport} title="Import text file">
+          <Btn onclick={() => fileInputRef.current?.click()} title="Import text file">
             <FaFileImport size={15} /> Import text
+            <input type="file" ref={fileInputRef} accept=".txt, .doc, .docx" className="hidden" onChange={handleImport} />
           </Btn>
           <Option selected={zen} setSelected={setZen} title="Toggle zen mode">
             <SiTarget size={15} />
@@ -219,7 +247,7 @@ function App() {
           )}
         </div>
       </div>
-      {zen && reading && <div className="absolute bottom-2 text-zinc-600 text-xs">Esc to exit</div>}
+      {reading && <div className="absolute bottom-2 text-zinc-600 text-xs">Esc to exit</div>}
       <AnimatePresence>
         {modalOpen && <Modal settings={settings} setSettings={setSettings} close={() => setModalOpen(false)} />}
       </AnimatePresence>
